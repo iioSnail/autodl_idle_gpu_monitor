@@ -10,21 +10,8 @@ import requests
 
 GPUs = GPUtil.getGPUs()
 
-log_f = open("/tmp/gpu_monitor.log", mode='a', encoding='utf-8')
-
-
-def log(*args):
-    args = [str(arg) for arg in args]
-    content = "%s - %s" % (
-        time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()),
-        ''.join(args)
-    )
-    log_f.write(content + "\n")
-    print(content)
-
-
 if len(GPUs) <= 0:
-    log("无GPU！无需监控！")
+    print("无GPU！无需监控！")
     exit(0)
 
 gpu_name = GPUs[0].name
@@ -34,7 +21,7 @@ def gpu_is_idle():
     for gpu in GPUs:
         # gpu.load = GPU使用率
         if gpu.load > 0:
-            log("GPU利用率：%s%%" % (gpu.load * 100))
+            print("GPU利用率：%s%%" % (gpu.load * 100))
             return False
     return True
 
@@ -54,12 +41,12 @@ def check_wechat_notify(args):
 
         return json.loads(resp.content.decode())['code'] == 'Success'
     except:
-        log(resp.content.decode())
+        print(resp.content.decode())
         return False
 
 
 def notify_wechat(args):
-    log("闲置时间过久，通知微信")
+    print("闲置时间过久，通知微信")
     headers = {"Authorization": args.token}
 
     content = "%s闲置超过%d分钟！" % (gpu_name, args.max_idle)
@@ -79,7 +66,7 @@ def notify_wechat(args):
 
         return json.loads(resp.content.decode())['code'] == 'Success'
     except:
-        log(resp.content.decode())
+        print(resp.content.decode())
         return False
 
 
@@ -93,7 +80,7 @@ def main():
     last_time = time.time()
 
     while True:
-        time.sleep(5)  # 每5s检测一次gpu使用情况
+        time.sleep(10)  # 每10s检测一次gpu使用情况
 
         if not gpu_is_idle():
             # GPU还在使用
@@ -101,13 +88,13 @@ def main():
             continue
 
         idle_time = int(time.time() - last_time)
-        log("GPU闲置时长:", idle_time, "秒")
+        print("GPU闲置时长:", idle_time, "秒")
 
         if idle_time < max_idle:
             # 未达到最大闲置时长
             continue
 
-        log("达到最大闲置时长")
+        print("达到最大闲置时长")
 
         # 达到闲置时长，通知微信
         # https://www.autodl.com/docs/msg/
@@ -116,11 +103,11 @@ def main():
         last_time = time.time()
 
         if args.shutdown:
-            log("已通知微信，系统将在%d分钟后关机" % args.wait_time)
+            print("已通知微信，系统将在%d分钟后关机" % args.wait_time)
 
             time.sleep(args.wait_time * 60)
 
-            log("关机")
+            print("关机")
             os.system("shutdown")
 
 
@@ -140,20 +127,20 @@ def parse_args():
     args = parser.parse_known_args()[0]
 
     if args.max_idle <= 0:
-        log("max-idle必须大于0分钟")
+        print("max-idle必须大于0分钟")
         exit(0)
 
     if args.token is None:
-        log("Token为空！GPU闲置时将不会进行微信通知!")
+        print("Token为空！GPU闲置时将不会进行微信通知!")
 
     if args.token and args.check_token:
         if check_wechat_notify(args):
-            log("微信通知配置成功!")
+            print("微信通知配置成功!")
         else:
-            log("微信通知配置失败，请检测Token是否正确！")
+            print("微信通知配置失败，请检测Token是否正确！")
 
     if args.shutdown:
-        log("自动关机开启！当GPU闲置时长达到%d+%d=%d分钟后将会自动关机！" \
+        print("自动关机开启！当GPU闲置时长达到%d+%d=%d分钟后将会自动关机！" \
               % (args.max_idle, args.wait_time, args.max_idle + args.wait_time))
 
     return args
