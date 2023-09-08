@@ -4,7 +4,7 @@ echo "配置GPU空闲监控..."
 
 rm -rf /tmp/autodl_idle_gpu_monitor
 cd /tmp
-git clone -b autodl_idle_gpu_monitor https://gitee.com/IndustriousSnail/iio_projects.git autodl_idle_gpu_monitor
+git clone https://github.com/iioSnail/autodl_idle_gpu_monitor.git
 
 cd autodl_idle_gpu_monitor
 
