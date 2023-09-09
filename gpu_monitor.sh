@@ -30,7 +30,7 @@ done
 
 
 echo "#!/bin/bash" > /etc/profile.d/gpu_monitor.sh
-echo "nohup sh gpu_monitor -c -m $max_idle \\" > /etc/profile.d/gpu_monitor.sh
+echo -n "nohup gpu_monitor -c -m $max_idle" > /etc/profile.d/gpu_monitor.sh
 
 echo -n "是否自动关机(y/n): "
 read shutdown
@@ -48,17 +48,14 @@ if [ "$shutdown" = "y" ]; then
       fi
     done
 
-    echo " -s -w $wait_time \\" >> /etc/profile.d/gpu_monitor.sh
-
-    nohup sh gpu_monitor -c -m $max_idle -s -w $wait_time -t $token &
+    echo -n " -s -w $wait_time" >> /etc/profile.d/gpu_monitor.sh
 else
     echo "不设置自动关机"
-    nohup sh gpu_monitor -c -m $max_idle -t $token &
 fi
 
-echo " -t $token \\" >> /etc/profile.d/gpu_monitor.sh
+echo -n " -t $token >> /tmp/gpu_monitor.log" >> /etc/profile.d/gpu_monitor.sh
 
-echo " &" >> /etc/profile.d/gpu_monitor.sh
+echo -n " &" >> /etc/profile.d/gpu_monitor.sh
 
 echo "配置完成！"
 echo "当GPU空闲超过 $max_idle 分钟后通知微信"
@@ -71,5 +68,6 @@ echo "你可通过”/etc/profile.d/gpu_monitor.sh“文件查看或修改开机
 
 echo "你可通过”tail -f /tmp/gpu_monitor.log“查看日志"
 
+bash /etc/profile.d/gpu_monitor.sh
 echo "程序后台启动成功！以下是输出日志（可以ctrl-c，不影响程序继续运行）"
 tail -f /tmp/gpu_monitor.log
