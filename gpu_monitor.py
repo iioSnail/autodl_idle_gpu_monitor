@@ -12,7 +12,6 @@ GPUs = GPUtil.getGPUs()
 
 log_f = open("/tmp/gpu_monitor.log", mode='a', encoding='utf-8')
 
-
 def log(*args):
     args = [str(arg) for arg in args]
     content = "%s - %s" % (
@@ -20,6 +19,8 @@ def log(*args):
         ''.join(args)
     )
     log_f.write(content + "\n")
+    log_f.flush()
+
     print(content)
 
 
@@ -85,6 +86,7 @@ def notify_wechat(args):
 
 
 def main():
+    log("启动GPU闲置监控程序")
     args = parse_args()
 
     max_idle = args.max_idle  # 最大闲置时长（单位秒）

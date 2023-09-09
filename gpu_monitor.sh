@@ -30,7 +30,7 @@ done
 
 
 echo "#!/bin/bash" > /etc/profile.d/gpu_monitor.sh
-echo -n "nohup gpu_monitor -c -m $max_idle" > /etc/profile.d/gpu_monitor.sh
+echo -n "nohup gpu_monitor -c -m $max_idle" >> /etc/profile.d/gpu_monitor.sh
 
 echo -n "是否自动关机(y/n): "
 read shutdown
@@ -53,7 +53,7 @@ else
     echo "不设置自动关机"
 fi
 
-echo -n " -t $token >> /tmp/gpu_monitor.log" >> /etc/profile.d/gpu_monitor.sh
+echo -n " -t $token" >> /etc/profile.d/gpu_monitor.sh
 
 echo -n " &" >> /etc/profile.d/gpu_monitor.sh
 
