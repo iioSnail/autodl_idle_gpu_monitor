@@ -33,9 +33,7 @@ echo "#!/bin/bash" > /etc/profile.d/gpu_monitor.sh
 
 echo 'pid=$(pgrep -f "python /usr/local/bin/gpu_monitor")' >> /etc/profile.d/gpu_monitor.sh
 echo 'if [ -z "$pid" ]; then' >> /etc/profile.d/gpu_monitor.sh
-echo 'else' >> /etc/profile.d/gpu_monitor.sh
-echo 'exit 0' >> /etc/profile.d/gpu_monitor.sh
-echo 'fi' >> /etc/profile.d/gpu_monitor.sh
+echo '  echo "启动GPU限制监控程序"' >> /etc/profile.d/gpu_monitor.sh
 
 echo -n "nohup gpu_monitor -c -m $max_idle" >> /etc/profile.d/gpu_monitor.sh
 
@@ -66,17 +64,32 @@ fi
 echo " -t $token \\" >> /etc/profile.d/gpu_monitor.sh
 
 echo " &" >> /etc/profile.d/gpu_monitor.sh
+echo 'else' >> /etc/profile.d/gpu_monitor.sh
+echo '  echo "GPU限制程序已启动"' >> /etc/profile.d/gpu_monitor.sh
+echo 'fi' >> /etc/profile.d/gpu_monitor.sh
 
 echo "配置完成！"
+
+sleep 1
+
 echo "当GPU空闲超过 $max_idle 分钟后通知微信"
 
 if [ "$shutdown" = "y" ]; then
    echo "当通知微信后，再过 $wait_time 分钟后自动关机"
 fi
 
+sleep 1
+
 echo "你可通过”/etc/profile.d/gpu_monitor.sh“文件查看或修改开机启动脚本"
+
+sleep 1
 
 echo "你可通过”tail -f /tmp/gpu_monitor.log“查看日志"
 
+sleep 1
+
 echo "程序后台启动成功！以下是输出日志（可以ctrl-c，不影响程序继续运行）"
+
+sleep 1
+
 tail -f /tmp/gpu_monitor.log
