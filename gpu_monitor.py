@@ -8,9 +8,13 @@ import time
 import GPUtil
 import requests
 
-GPUs = GPUtil.getGPUs()
+
+def GPUs():
+    return GPUtil.getGPUs()
+
 
 log_f = open("/tmp/gpu_monitor.log", mode='a', encoding='utf-8')
+
 
 def log(*args):
     args = [str(arg) for arg in args]
@@ -24,16 +28,15 @@ def log(*args):
     print(content)
 
 
-
-if len(GPUs) <= 0:
+if len(GPUs()) <= 0:
     log("无GPU！无需监控！")
     exit(0)
 
-gpu_name = GPUs[0].name
+gpu_name = GPUs()[0].name
 
 
 def gpu_is_idle():
-    for gpu in GPUs:
+    for gpu in GPUs():
         # gpu.load = GPU使用率
         if gpu.load > 0:
             log("GPU利用率：%s%%" % (gpu.load * 100))
@@ -157,7 +160,7 @@ def parse_args():
 
     if args.shutdown:
         log("自动关机开启！当GPU闲置时长达到%d+%d=%d分钟后将会自动关机！" \
-              % (args.max_idle, args.wait_time, args.max_idle + args.wait_time))
+            % (args.max_idle, args.wait_time, args.max_idle + args.wait_time))
 
     return args
 
